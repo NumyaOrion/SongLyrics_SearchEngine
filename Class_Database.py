@@ -1,4 +1,5 @@
 import os
+import pickle
 from Class_Song import Song
 from Class_Indices import InvertedIndexWords
 from Class_Indices import InvertedIndexTitle
@@ -40,3 +41,16 @@ class SongDatabaseBuilder:  # receives directory, builds + gives back database (
                             inverted_index_wordsearch.add_song(song)
 
         return song_database, inverted_index_wordsearch
+
+    def save_to_file(self, song_database, index_wordsearch, db_file, index_file):
+        with open(db_file, 'wb') as dbf:
+            pickle.dump(song_database, dbf)
+        with open(index_file, 'wb') as idxf:
+            pickle.dump(index_wordsearch, idxf)
+
+    def load_from_file(self, db_file, index_file):
+        with open(db_file, 'rb') as dbf:
+            song_database = pickle.load(dbf)
+        with open(index_file, 'rb') as idxf:
+            index_wordsearch = pickle.load(idxf)
+        return song_database, index_wordsearch
