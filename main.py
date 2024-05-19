@@ -23,7 +23,9 @@ print("\n")
 
 # Create an instance of the Query class
 # query_instance = Query(song_database, index_wordsearch) # search for lyrics only
-query_instance = Query(song_database, index_wordsearch, index_songtitles)  # search for titles only
+
+# search for titles only or both lyrics and titles
+query_instance = Query(song_database, index_wordsearch, index_songtitles)
 
 while True:
     user_query = input("Search for words in the lyrics (press 'q' to quit): ")
@@ -33,4 +35,7 @@ while True:
 
     # Perform the lyrics query using the desired Query class instance
     # query_instance.query_lyrics(user_query)  # search for lyrics only
-    query_instance.query_titles(user_query)  # search for titles only
+    # query_instance.query_titles(user_query)  # search for titles only
+
+    # weighted search for both lyrics and titles
+    query_instance.query_complete(user_query)

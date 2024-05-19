@@ -10,9 +10,9 @@ class Query:
 
     def query_titles(self, user_query):
         self._execute_query_titles(user_query, self.index_titlesearch)
-    def query_lyrics_titles(self, user_query):
-        self._execute_query_lyrics_titles(user_query, self.index_wordsearch, self.index_titlesearch)
 
+    def query_complete(self, user_query):
+        self._execute_query_complete(user_query, self.index_wordsearch, self.index_titlesearch)
 
     def _execute_query_lyrics(self, user_query, index):
         # Split the user's query into individual words
@@ -102,67 +102,62 @@ class Query:
             if not songs_found:
                 print("No songs found matching all words in the query.")
 
-    def _execute_query_lyrics_titles(self, user_query, index_lyrics, index_titles):
+    def _execute_query_complete(self, user_query, index_lyrics, index_titles):
         # Split the user's query into individual words
         query_words = user_query.lower().split()
 
-        # Initialize a set to store the IDs of the songs that contain all query words
-        result_songs = set()
+        # Retrieve songs that contain the words of the query in the lyrics and store in set
+        result_songslyrics = set()
+
+        # Retrieve songs that contain the words of the query in the title and store in set
         result_songtitles = set()
 
         # Initialize a flag to track if any songs have been found
         songs_found = False
 
-        # Iterate over each word in the query and search within the lyrics
+        # Search for query words in the lyrics
         for word in query_words:
-            # Check if the word is in the inverted index
             if word in index_lyrics.index:
-                # Retrieve the songs containing the word from the inverted index
                 songs_with_word = index_lyrics.index[word]
-                # If no songs have been found yet, add all songs containing this word to the result set
-                if not result_songs:
-                    result_songs.update(song.song_ID for song in songs_with_word)
+                if not result_songslyrics:
+                    result_songslyrics.update(song.song_ID for song in songs_with_word)
                 else:
-                    # Take the intersection of the current result set and the songs containing this word
-                    result_songs.intersection_update(song.song_ID for song in songs_with_word)
+                    result_songslyrics.intersection_update(song.song_ID for song in songs_with_word)
 
-        # Iterate over each word in the query and search within the songtitles
+        # Search for query words in the titles
         for word in query_words:
-            # Check if the word is in the inverted index of the songtitles
             if word in index_titles.index:
-                # Retrieve the songs containing the word in the title from the inverted index
                 songs_with_word = index_titles.index[word]
-                # If no songs have been found yet, add all songs containing this word to the result set
                 if not result_songtitles:
                     result_songtitles.update(song.song_ID for song in songs_with_word)
                 else:
-                    # Take the intersection of the current result set and the songs containing this word
                     result_songtitles.intersection_update(song.song_ID for song in songs_with_word)
 
-        # bring the results together
-        final_results_set = set()  # use a set so duplicates are eliminated
-        final_results_set = result_songs + result_songtitles
+        # Bring the results together and weight them
+        final_results = {}
+        for song_id in result_songslyrics:
+            if song_id in result_songtitles:
+                final_results[song_id] = 3  # Lyrics and title match
+            else:
+                final_results[song_id] = 1  # Lyrics only match
 
-        final_results_list = list()  # convert to list, so it is ordered
+        for song_id in result_songtitles:
+            if song_id not in final_results:
+                final_results[song_id] = 2  # Title only match
 
+        # Sort the results by weight
+        sorted_results = sorted(final_results.items(), key=lambda x: x[1], reverse=True)
 
-        # If no songs were found, display a message
-        if not result_songs:
+        # Display maximum the first 10 results of final_results_list
+        if not sorted_results:
             print("No songs found matching the query.")
         else:
-            # Display the titles and artists of the matching songs
-            print("Matching songs:", len(result_songs))
-            for song in self.song_database:
-                if song.song_ID in result_songs:
-                    print(f"- '{song.title}' by {song.artist}")
+            print("Matching songs:", len(sorted_results))
+            for song_id, weight in sorted_results[:10]:
+                song = next((s for s in self.song_database if s.song_ID == song_id), None)
+                if song:
+                    print(f"- '{song.title}' by {song.artist} (Weight: {weight})")
                     songs_found = True
-            # Display all the information including full lyrics
-            # for song in self.song_database:
-                # if song.song_ID in result_songs:
-                    # print("\n")
-                    # song.display()
-                    # songs_found = True
 
-            # If no songs were found, display a message
             if not songs_found:
                 print("No songs found matching all words in the query.")
