@@ -16,7 +16,7 @@ class Query:
 
     def _execute_query_lyrics(self, user_query, index):
         # Split the user's query into individual words
-        query_words = user_query.split()
+        query_words = user_query.lower().split()
 
         # Initialize a set to store the IDs of the songs that contain all query words
         result_songs = set()
@@ -60,7 +60,7 @@ class Query:
 
     def _execute_query_titles(self, user_query, index):
         # Split the user's query into individual words
-        query_words = user_query.split()
+        query_words = user_query.lower().split()
 
         # Initialize a set to store the IDs of the songs that contain all query words
         result_songs = set()
@@ -104,7 +104,7 @@ class Query:
 
     def _execute_query_lyrics_titles(self, user_query, index_lyrics, index_titles):
         # Split the user's query into individual words
-        query_words = user_query.split()
+        query_words = user_query.lower().split()
 
         # Initialize a set to store the IDs of the songs that contain all query words
         result_songs = set()

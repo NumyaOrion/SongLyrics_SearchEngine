@@ -1,12 +1,9 @@
-# ISSUES TO SOLVE:
-# - Second index for titles
-
 class InvertedIndexWords:
     def __init__(self):
         self.index = {}
 
     def add_song(self, song):
-        words = song.lyrics.split()  # Splitting the lyrics string
+        words = song.lyrics.lower().split()  # Splitting the lyrics string
         for word in words:
             if word not in self.index:
                 self.index[word] = []
@@ -19,7 +16,7 @@ class InvertedIndexTitle:
         self.index = {}
 
     def add_title(self, song):
-        words = song.title.split()  # Splitting the title string
+        words = song.title.lower().split()  # Splitting the title string
         for word in words:
             if word not in self.index:
                 self.index[word] = []
