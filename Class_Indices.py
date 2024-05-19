@@ -1,7 +1,5 @@
 # ISSUES TO SOLVE:
 # - Second index for titles
-# - write index and database to file
-# - weight index title and word differently, display only a specific amount of results
 
 class InvertedIndexWords:
     def __init__(self):

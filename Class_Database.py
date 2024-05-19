@@ -12,6 +12,7 @@ class SongDatabaseBuilder:  # receives directory, builds + gives back database (
     def build_database(self):
         song_database = []
         inverted_index_wordsearch = InvertedIndexWords()
+        inverted_index_songtitles = InvertedIndexTitle()
 
         # Iterate over each artist's folder
         for artist_folder in os.listdir(self.directory):
@@ -37,20 +38,26 @@ class SongDatabaseBuilder:  # receives directory, builds + gives back database (
                             # Append the song to the song_database list
                             song_database.append(song)
 
-                            # Update the inverted index
+                            # Update the inverted index for the lyrics
                             inverted_index_wordsearch.add_song(song)
+                            # Update the inverted index for the song titles
+                            inverted_index_songtitles.add_title(song)
 
-        return song_database, inverted_index_wordsearch
+        return song_database, inverted_index_wordsearch, inverted_index_songtitles
 
-    def save_to_file(self, song_database, index_wordsearch, db_file, index_file):
+    def save_to_file(self, song_database, index_wordsearch, index_songtitles, db_file, index_file, index_titles_file):
         with open(db_file, 'wb') as dbf:
             pickle.dump(song_database, dbf)
         with open(index_file, 'wb') as idxf:
             pickle.dump(index_wordsearch, idxf)
+        with open(index_titles_file, 'wb') as idxtf:
+            pickle.dump(index_songtitles, idxtf)
 
-    def load_from_file(self, db_file, index_file):
+    def load_from_file(self, db_file, index_file, index_titles_file):
         with open(db_file, 'rb') as dbf:
             song_database = pickle.load(dbf)
         with open(index_file, 'rb') as idxf:
             index_wordsearch = pickle.load(idxf)
-        return song_database, index_wordsearch
+        with open(index_titles_file, 'rb') as idxtf:
+            index_songtitles = pickle.load(idxtf)
+        return song_database, index_wordsearch, index_songtitles
