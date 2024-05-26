@@ -204,7 +204,7 @@ class Query:
     def correct_query(self, query):
         corrected_query = []
         for word in query.split():
-            if len(word) > 3:
+            if len(word) > 4:
                 candidates = self.find_candidates(word.lower(), self.unique_words)
                 if candidates:
                     corrected_query.append(candidates[0])  # Choose the best candidate, e.g., the first one

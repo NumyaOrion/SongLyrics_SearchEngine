@@ -38,6 +38,7 @@ while True:
     # query_instance.query_titles(user_query)  # search for titles only
 
     # weighted search for both lyrics and titles
-    # query_instance.query_complete(user_query)
+    query_instance.query_complete(user_query)
+
     # weighted search including mme (<= 2)
-    query_instance.query_with_mme(user_query)
+    # query_instance.query_with_mme(user_query)
